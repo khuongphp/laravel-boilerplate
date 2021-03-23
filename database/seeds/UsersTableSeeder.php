@@ -20,13 +20,13 @@ class UsersTableSeeder extends Seeder
         $role = new Role();
 
         $user->create([
-            'name' => 'Super admin',
-            'email' => 'superadmin@example.com',
-            'password' => bcrypt($defaultPassword),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Super admin',
+            'email'             => 'superadmin@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt($defaultPassword),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
         /*
@@ -35,18 +35,20 @@ class UsersTableSeeder extends Seeder
 
         /** @var Role $administratorRole */
         $administratorRole = $role->create([
-            'name' => 'administrator',
-            'en' => [
-                'display_name' => 'Administrator',
-                'description' => 'Access to mostly web features',
+            'name'         => 'administrator',
+            'display_name' => [
+                'en' => 'Administrator',
+                'fr' => 'Administrateur',
+                'es' => 'Administrador',
+                'ar' => 'مدير',
+                'ru' => 'Администратор',
             ],
-            'fr' => [
-                'display_name' => 'Administrateur',
-                'description' => 'Accès à la plupart des fonctionnalités du site',
-            ],
-            'ar' => [
-                'display_name' => 'مدير',
-                'description' => 'قادر على الوصول إلى أغلب ميزات الموقع',
+            'description' => [
+                'en' => 'Access to mostly web features',
+                'fr' => 'Accès à la plupart des fonctionnalités du site',
+                'es' => 'Acceso a la mayoría de las características web',
+                'ar' => 'قادر على الوصول إلى أغلب ميزات الموقع',
+                'ru' => 'Доступ к большинству возможностей сайта',
             ],
             'order' => 0,
         ]);
@@ -88,18 +90,20 @@ class UsersTableSeeder extends Seeder
 
         /** @var Role $supervisorRole */
         $supervisorRole = $role->create([
-            'name' => 'supervisor',
-            'en' => [
-                'display_name' => 'Supervisor',
-                'description' => 'Access to non critical web features (access and seo management excluded)',
+            'name'         => 'supervisor',
+            'display_name' => [
+                'en' => 'Supervisor',
+                'fr' => 'Superviseur',
+                'es' => 'Supervisor',
+                'ar' => 'مشرف',
+                'ru' => 'Контролёр',
             ],
-            'fr' => [
-                'display_name' => 'Superviseur',
-                'description' => 'Accès à l\'ensemble des fonctionnalités non critiques du site (exclusion de la gestion des accès et seo)',
-            ],
-            'ar' => [
-                'display_name' => 'مشرف',
-                'description' => 'وصول إلى ميزات الموقع غير الحساسة (يستثنى منه الوصول وإدارة إعدادات تحسين محركات البحث)',
+            'description' => [
+                'en' => 'Access to non critical web features (access and seo management excluded)',
+                'fr' => 'Accès à l\'ensemble des fonctionnalités non critiques du site (exclusion de la gestion des accès et seo)',
+                'es' => 'Acceso a características web no críticas (acceso y administración de SEO excluidos)',
+                'ar' => 'وصول إلى ميزات الموقع غير الحساسة (يستثنى منه الوصول وإدارة إعدادات تحسين محركات البحث)',
+                'ru' => 'Доступ к некритичной функциональности (закрыт доступ к SEO функциям)',
             ],
             'order' => 1,
         ]);
@@ -128,18 +132,20 @@ class UsersTableSeeder extends Seeder
 
         /** @var Role $seoConsultantRole */
         $seoConsultantRole = $role->create([
-            'name' => 'seo consultant',
-            'en' => [
-                'display_name' => 'SEO consultant',
-                'description' => 'Access to manage metatags and redirections',
+            'name'         => 'seo consultant',
+            'display_name' => [
+                'en' => 'SEO consultant',
+                'fr' => 'Consultant SEO',
+                'es' => 'SEO consultant',
+                'ar' => 'مستشار تحسين أداء محركات البحث',
+                'ru' => 'SEO-консультант',
             ],
-            'fr' => [
-                'display_name' => 'Consultant SEO',
-                'description' => 'Accès à la gestion des metatags et redirections.',
-            ],
-            'ar' => [
-                'display_name' => 'مستشار تحسين أداء محركات البحث',
-                'description' => 'وصول وإدارة المعلومات الوصفية وقواعد التوجيه',
+            'description' => [
+                'en' => 'Access to manage metatags and redirections',
+                'fr' => 'Accès à la gestion des metatags et redirections',
+                'es' => 'Acceso para administrar metatags y redirecciones',
+                'ar' => 'وصول وإدارة المعلومات الوصفية وقواعد التوجيه',
+                'ru' => 'Доступ к управлению метаинформацией и перенаправлениями.',
             ],
             'order' => 2,
         ]);
@@ -161,18 +167,20 @@ class UsersTableSeeder extends Seeder
 
         /** @var Role $editorRole */
         $editorRole = $role->create([
-            'name' => 'editor',
-            'en' => [
-                'display_name' => 'Editor',
-                'description' => 'Access to all posts writing features',
+            'name'         => 'editor',
+            'display_name' => [
+                'en' => 'Editor',
+                'fr' => 'Editeur',
+                'es' => 'Editor',
+                'ar' => 'منقّح',
+                'ru' => 'Редактор',
             ],
-            'fr' => [
-                'display_name' => 'Editeur',
-                'description' => 'Accès à l\'ensemble des fonctions de rédaction du site',
-            ],
-            'ar' => [
-                'display_name' => 'منقّح',
-                'description' => 'وصول إلى جميع ميزات كتابة المقالات',
+            'description' => [
+                'en' => 'Access to all posts writing features',
+                'fr' => 'Accès à l\'ensemble des fonctions de rédaction du site',
+                'es' => 'Acceso a todas las publicaciones de escritura',
+                'ar' => 'وصول إلى جميع ميزات كتابة المقالات',
+                'ru' => 'Доступ к полному управлению статьями.',
             ],
             'order' => 3,
         ]);
@@ -191,18 +199,20 @@ class UsersTableSeeder extends Seeder
 
         /** @var Role $redactorRole */
         $redactorRole = $role->create([
-            'name' => 'redactor',
-            'en' => [
-                'display_name' => 'Redactor',
-                'description' => 'Access to posts writing features, but restricted to his own posts',
+            'name'         => 'redactor',
+            'display_name' => [
+                'en' => 'Redactor',
+                'fr' => 'Rédacteur',
+                'es' => 'Redactor',
+                'ar' => 'محرر',
+                'ru' => 'Писатель',
             ],
-            'fr' => [
-                'display_name' => 'Rédacteur',
-                'description' => 'Accès aux fonctions de rédaction du site, avec possibilité d\'éditer uniquement ses propres articles',
-            ],
-            'ar' => [
-                'display_name' => 'محرر',
-                'description' => 'وصول إلى ميزات كتابة المقالات فيما يخص المقالات الخاصة به فقط',
+            'description' => [
+                'en' => 'Access to posts writing features, but restricted to his own posts',
+                'fr' => 'Accès aux fonctions de rédaction du site, avec possibilité d\'éditer uniquement ses propres articles',
+                'es' => 'Acceso a las funciones de escritura de publicaciones, pero restringido a sus propias publicaciones',
+                'ar' => 'وصول إلى ميزات كتابة المقالات فيما يخص المقالات الخاصة به فقط',
+                'ru' => 'Доступ к полному управлению статьями. Но только своими.',
             ],
             'order' => 4,
         ]);
@@ -218,49 +228,16 @@ class UsersTableSeeder extends Seeder
             $redactorRole->permissions()->create(['name' => $name]);
         }
 
-        /** @var Role $demoRole */
-        $demoRole = $role->create([
-            'name' => 'demo',
-            'en' => [
-                'display_name' => 'Demo',
-                'description' => 'Access to all read only BO functionalities',
-            ],
-            'fr' => [
-                'display_name' => 'Démo',
-                'description' => 'Accès à l\'ensemble des fonctionnalités du BO en lecture seule',
-            ],
-            'ar' => [
-                'display_name' => 'مستخدم للعرض',
-                'description' => 'وصول إلى كل ميزات المدونة للقراءة فقط',
-            ],
-            'order' => 5,
-        ]);
-
-        foreach (
-            [
-                'access backend',
-                'access all backend',
-                'view posts',
-                'view form_settings',
-                'view form_submissions',
-                'view users',
-                'view roles',
-                'view metas',
-                'view redirections',
-            ] as $name) {
-            $demoRole->permissions()->create(['name' => $name]);
-        }
-
         // 1 administrator
         /** @var User $administrator */
         $administrator = $user->create([
-            'name' => 'Administrator',
-            'email' => 'admin@example.com',
-            'password' => bcrypt($defaultPassword),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Administrator',
+            'email'             => 'admin@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt($defaultPassword),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
         $administrator->roles()->save($administratorRole);
@@ -268,13 +245,13 @@ class UsersTableSeeder extends Seeder
         // 1 supervisor
         /** @var User $supervisor */
         $supervisor = $user->create([
-            'name' => 'Supervisor',
-            'email' => 'supervisor@example.com',
-            'password' => bcrypt($defaultPassword),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Supervisor',
+            'email'             => 'supervisor@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt($defaultPassword),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
         $supervisor->roles()->save($supervisorRole);
@@ -282,27 +259,27 @@ class UsersTableSeeder extends Seeder
         // 1 demo
         /** @var User $demo */
         $demo = $user->create([
-            'name' => 'Demo',
-            'email' => 'demo@example.com',
-            'password' => bcrypt('demo'),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Demo',
+            'email'             => 'demo@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt('demo'),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
-        $demo->roles()->save($demoRole);
+        $demo->roles()->save($administratorRole);
 
         // 1 seo consultant
         /** @var User $seoConsultant */
         $seoConsultant = $user->create([
-            'name' => 'Seo consultant',
-            'email' => 'seo@example.com',
-            'password' => bcrypt($defaultPassword),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Seo consultant',
+            'email'             => 'seo@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt($defaultPassword),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
         $seoConsultant->roles()->save($seoConsultantRole);
@@ -311,13 +288,13 @@ class UsersTableSeeder extends Seeder
         // 1 editor
         /** @var User $editor */
         $editor = $user->create([
-            'name' => 'Editor',
-            'email' => 'editor@example.com',
-            'password' => bcrypt($defaultPassword),
-            'active' => true,
-            'confirmed' => true,
-            'locale' => app()->getLocale(),
-            'timezone' => config('app.timezone'),
+            'name'              => 'Editor',
+            'email'             => 'editor@example.com',
+            'email_verified_at' => now(),
+            'password'          => bcrypt($defaultPassword),
+            'active'            => true,
+            'locale'            => app()->getLocale(),
+            'timezone'          => config('app.timezone'),
         ]);
 
         $editor->roles()->save($editorRole);
@@ -326,13 +303,13 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 5; $i++) {
             /** @var User $redactor */
             $redactor = $user->create([
-                'name' => "Redactor $i",
-                'email' => "redactor-$i@example.com",
-                'password' => bcrypt($defaultPassword),
-                'active' => true,
-                'confirmed' => true,
-                'locale' => app()->getLocale(),
-                'timezone' => config('app.timezone'),
+                'name'              => "Redactor $i",
+                'email'             => "redactor-$i@example.com",
+                'email_verified_at' => now(),
+                'password'          => bcrypt($defaultPassword),
+                'active'            => true,
+                'locale'            => app()->getLocale(),
+                'timezone'          => config('app.timezone'),
             ]);
 
             $redactor->roles()->save($redactorRole);

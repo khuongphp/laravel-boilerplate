@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\View\Factory;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Repositories\Contracts\AccountRepository;
 use Mcamara\LaravelLocalization\LaravelLocalization;
@@ -26,22 +25,11 @@ class AccountController extends Controller
      *
      * @param AccountRepository                                $account
      * @param \Mcamara\LaravelLocalization\LaravelLocalization $localization
-     * @param \Illuminate\Contracts\View\Factory               $view
-     *
-     * @throws \Mcamara\LaravelLocalization\Exceptions\SupportedLocalesNotDefined
      */
-    public function __construct(AccountRepository $account, LaravelLocalization $localization, Factory $view)
+    public function __construct(AccountRepository $account, LaravelLocalization $localization)
     {
         $this->account = $account;
         $this->localization = $localization;
-
-        $view->composer('*', function (\Illuminate\View\View $view) {
-            $locales = collect($this->localization->getSupportedLocales())->map(function ($item) {
-                return $item['native'];
-            });
-
-            $view->withLocales($locales)->withTimezones(\DateTimeZone::listIdentifiers());
-        });
     }
 
     /**
@@ -55,7 +43,11 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        return view('user.account');
+        $locales = collect($this->localization->getSupportedLocales())->map(function ($item) {
+            return $item['native'];
+        });
+
+        return view('user.account')->withLocales($locales)->withTimezones(\DateTimeZone::listIdentifiers());
     }
 
     /**
@@ -69,32 +61,6 @@ class AccountController extends Controller
 
         return redirect()->route('user.account')
             ->withFlashSuccess(__('labels.user.profile_updated'));
-    }
-
-    /**
-     *  Send mail confirmation.
-     */
-    public function sendConfirmation()
-    {
-        $this->account->sendConfirmation();
-
-        return redirect()->back()
-            ->withFlashSuccess(__('labels.user.email_confirmation_sended'));
-    }
-
-    /**
-     *  Confirm email.
-     *
-     * @param $token
-     *
-     * @return
-     */
-    public function confirmEmail($token)
-    {
-        $this->account->confirmEmail($token);
-
-        return redirect()->route('user.account')
-            ->withFlashSuccess(__('labels.user.email_confirmed'));
     }
 
     /**

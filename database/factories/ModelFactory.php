@@ -14,39 +14,53 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => bcrypt('secret'),
-        'active' => true,
-        'confirmed' => true,
-        'locale' => app()->getLocale(),
-        'timezone' => config('app.timezone'),
+        'name'              => $faker->name,
+        'email'             => $faker->unique()->safeEmail,
+        'email_verified_at' => now(),
+        'password'          => bcrypt('secret'),
+        'active'            => true,
+        'locale'            => app()->getLocale(),
+        'timezone'          => config('app.timezone'),
     ];
 });
 
 $factory->define(App\Models\Meta::class, function (Faker\Generator $faker) {
     return [
-        'en' => [
-            'title' => $faker->sentence,
-            'description' => $faker->sentences(3, true),
+        'title' => [
+            'en' => $faker->sentence,
+            'fr' => $faker->sentence,
+            'es' => $faker->sentence,
+            'ar' => $faker->sentence,
+            'ru' => $faker->sentence,
+            'de' => $faker->sentence,
+            'pt' => $faker->sentence,
+            'zn' => $faker->sentence,
         ],
-        'fr' => [
-            'title' => $faker->sentence,
-            'description' => $faker->sentences(3, true),
-        ],
-        'ar' => [
-            'title' => $faker->sentence,
-            'description' => $faker->sentences(3, true),
+        'description' => [
+            'en' => $faker->sentences(3, true),
+            'fr' => $faker->sentences(3, true),
+            'es' => $faker->sentences(3, true),
+            'ar' => $faker->sentences(3, true),
+            'ru' => $faker->sentences(3, true),
+            'de' => $faker->sentences(3, true),
+            'pt' => $faker->sentences(3, true),
+            'zn' => $faker->sentences(3, true),
         ],
     ];
 });
 
-$factory->define(App\Models\Tag::class, function (Faker\Generator $faker) {
-    $locales = ['en', 'fr', 'ar'];
-
+$factory->define(Spatie\Tags\Tag::class, function (Faker\Generator $faker) {
     return [
-        'locale' => $locales[array_rand($locales)],
-        'name' => $faker->unique()->word,
+        'name' => [
+            'en' => $faker->unique()->word,
+            'fr' => $faker->unique()->word,
+            'es' => $faker->unique()->word,
+            'ar' => $faker->unique()->word,
+            'ru' => $faker->unique()->word,
+            'de' => $faker->unique()->word,
+            'pt' => $faker->unique()->word,
+            'zn' => $faker->unique()->word,
+        ],
     ];
 });
 
@@ -60,22 +74,30 @@ $factory->define(App\Models\Post::class, function (Faker\Generator $faker) {
     }
 
     return [
-        'en' => [
-            'title' => $faker->sentence,
-            'summary' => $faker->sentences(3, true),
+        'title' => [
+            'en' => $faker->sentence,
+            'fr' => $faker->sentence,
+            'es' => $faker->sentence,
+            'ar' => $faker->sentence,
+            'ru' => $faker->sentence,
+            'de' => $faker->sentence,
+            'pt' => $faker->sentence,
+            'zn' => $faker->sentence,
         ],
-        'fr' => [
-            'title' => $faker->sentence,
-            'summary' => $faker->sentences(3, true),
+        'summary' => [
+            'en' => $faker->sentences(3, true),
+            'fr' => $faker->sentences(3, true),
+            'es' => $faker->sentences(3, true),
+            'ar' => $faker->sentences(3, true),
+            'ru' => $faker->sentences(3, true),
+            'de' => $faker->sentences(3, true),
+            'pt' => $faker->sentences(3, true),
+            'zn' => $faker->sentences(3, true),
         ],
-        'ar' => [
-            'title' => $faker->sentence,
-            'summary' => $faker->sentences(3, true),
-        ],
-        'status' => $faker->numberBetween(0, 2),
-        'promoted' => $faker->boolean(10),
-        'pinned' => $faker->boolean(5),
-        'published_at' => $publishedDate,
+        'status'         => $faker->numberBetween(0, 2),
+        'promoted'       => $faker->boolean(10),
+        'pinned'         => $faker->boolean(5),
+        'published_at'   => $publishedDate,
         'unpublished_at' => $unPublishedDate,
     ];
 });

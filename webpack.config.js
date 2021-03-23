@@ -2,23 +2,26 @@ require('dotenv').config()
 const path = require('path')
 const webpack = require('webpack')
 
+const { VueLoaderPlugin } = require('vue-loader')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const WebpackNotifierPlugin = require('webpack-notifier')
 const ManifestPlugin = require('webpack-manifest-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
 
 const hmr = process.argv.includes('--hot')
 const production = process.env.NODE_ENV === 'production'
 const devServerPort = parseInt(process.env.DEV_SERVER_PORT || '8080', 10)
+const devServerUrl = process.env.DEV_SERVER_URL || 'http://localhost:8080'
 
 const publicPathFolder = production ? '/dist/' : '/build/'
-const publicPath = hmr ? `http://localhost:${devServerPort}${publicPathFolder}` : publicPathFolder
+const publicPath = hmr ? `${devServerUrl}${publicPathFolder}` : publicPathFolder
 
-function getEntryConfig (name, analyzerPort) {
+function getEntryConfig(name, analyzerPort, alias = {}) {
   let plugins = [
+    new VueLoaderPlugin(),
     new webpack.IgnorePlugin(/jsdom$/),
-    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /fr/),
     new FriendlyErrorsWebpackPlugin(),
     new WebpackNotifierPlugin(),
     new MiniCssExtractPlugin({
@@ -32,18 +35,44 @@ function getEntryConfig (name, analyzerPort) {
   ]
 
   if (production) {
-    plugins.push(...[
-      new BundleAnalyzerPlugin({
-        analyzerPort
-      })
-    ])
+    plugins.push(
+      ...[
+        new BundleAnalyzerPlugin({
+          analyzerPort
+        })
+      ]
+    )
   }
+
+  let postcssPlugins = [require('autoprefixer')()]
+
+  if (production) {
+    postcssPlugins.push(require('cssnano')())
+  }
+
+  let cssLoaders = [
+    hmr ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+    {
+      loader: 'css-loader',
+      options: {
+        sourceMap: true
+      }
+    },
+    {
+      loader: 'postcss-loader',
+      options: {
+        ident: 'postcss',
+        sourceMap: true,
+        plugins: postcssPlugins
+      }
+    }
+  ]
 
   return {
     entry: {
       [name]: [
-        `./resources/assets/js/${name}/app.js`,
-        `./resources/assets/sass/${name}/app.scss`
+        `./resources/js/${name}/app.js`,
+        `./resources/sass/${name}/app.scss`
       ]
     },
     output: {
@@ -54,31 +83,23 @@ function getEntryConfig (name, analyzerPort) {
     module: {
       rules: [
         {
+          test: /\.css$/,
+          use: cssLoaders
+        },
+        {
           test: /\.scss$/,
-          use: [
-            hmr ? 'style-loader' : MiniCssExtractPlugin.loader,
+          use: cssLoaders.concat([
             {
-              loader: 'css-loader',
-              options: {
-                minimize: production,
-                sourceMap: true
-              }
-            }, {
-              loader: 'postcss-loader',
-              options: {
-                ident: 'postcss',
-                sourceMap: true
-              }
-            }, {
               loader: 'resolve-url-loader'
-            }, {
+            },
+            {
               loader: 'sass-loader',
               options: {
                 outputStyle: 'expanded',
                 sourceMap: true
               }
             }
-          ]
+          ])
         },
         {
           test: /\.(js|vue)$/,
@@ -92,46 +113,50 @@ function getEntryConfig (name, analyzerPort) {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          loader: 'babel-loader'
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
         },
         {
           test: /\.(png|jpe?g|gif)$/,
           use: [
             {
-              loader: 'file-loader',
+              loader: 'url-loader',
               options: {
-                name: (path) => {
+                name: path => {
                   if (!/node_modules/.test(path)) {
                     return 'images/[name].[ext]?[hash]'
                   }
 
-                  return `images/vendor-${name}/` + path
-                    .replace(/\\/g, '/')
-                    .replace(
-                      /((.*(node_modules))|images|image|img|assets)\//g, ''
-                    ) + '?[hash]'
-                }
-              }
-            },
-            {
-              loader: 'img-loader',
-              options: {
-                enabled: production
+                  return (
+                    `images/vendor-${name}/` +
+                    path
+                      .replace(/\\/g, '/')
+                      .replace(
+                        /((.*(node_modules))|images|image|img|assets)\//g,
+                        ''
+                      ) +
+                    '?[hash]'
+                  )
+                },
+                limit: 4096
               }
             }
           ]
         },
         {
           test: /\.(woff2?|ttf|eot|svg|otf)$/,
-          loader: 'file-loader',
+          loader: 'url-loader',
           options: {
-            name: (path) => {
+            name: path => {
               if (!/node_modules/.test(path)) {
                 return 'fonts/[name].[ext]?[hash]'
               }
 
               return `fonts/vendor-${name}/[name].[ext]?[hash]`
-            }
+            },
+            limit: 4096
           }
         }
       ]
@@ -140,7 +165,7 @@ function getEntryConfig (name, analyzerPort) {
       splitChunks: {
         cacheGroups: {
           vendor: {
-            test: /node_modules/,
+            test: /node_modules.*\.js$/,
             name: `vendor-${name}`,
             chunks: 'all'
           }
@@ -150,11 +175,12 @@ function getEntryConfig (name, analyzerPort) {
     plugins,
     resolve: {
       extensions: ['.js', '.vue', '.json'],
-      alias: {
-        'vue$': 'vue/dist/vue.esm.js',
-        '@fortawesome/fontawesome-free-solid$': '@fortawesome/fontawesome-free-solid/shakable.es.js',
-        '@fortawesome/fontawesome-free-brands$': '@fortawesome/fontawesome-free-brands/shakable.es.js'
-      }
+      alias: Object.assign(
+        {
+          sweetalert2$: 'sweetalert2/dist/sweetalert2.js'
+        },
+        alias
+      )
     },
     externals: {
       jquery: 'jQuery',
@@ -166,6 +192,11 @@ function getEntryConfig (name, analyzerPort) {
       headers: {
         'Access-Control-Allow-Origin': '*'
       },
+      watchOptions: {
+        aggregateTimeout: 300,
+        poll: 1000,
+        ignored: /node_modules/
+      },
       historyApiFallback: true,
       compress: true,
       noInfo: true,
@@ -176,6 +207,8 @@ function getEntryConfig (name, analyzerPort) {
 }
 
 module.exports = [
-  getEntryConfig('frontend', 8888),
+  getEntryConfig('frontend', 8888, {
+    vue$: 'vue/dist/vue.esm.js'
+  }),
   getEntryConfig('backend', 8889)
 ]

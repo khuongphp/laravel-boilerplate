@@ -1,27 +1,24 @@
 @extends('layouts.backend')
 
-@section('body_class', 'flex-row align-items-center')
-
 <!-- Main Content -->
 @section('body')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5 mx-auto">
-                <div class="card p-4">
-                    <div class="card-body">
-                        <h1 class="mb-4">@lang('labels.user.login')</h1>
+    <div class="app flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <div class="card-body">
+                            <form action="{{ route('password.email') }}" method="post">
+                                @csrf
 
-                        <form action="{{ route('login') }}" method="post">
-                            @csrf
-
-                            <div class="form-group">
-                                {{ Form::bsEmail('email', null, ['required', 'placeholder' => __('validation.attributes.email')]) }}
-                            </div>
-
-                            <div class="form-group">
-                                <button class="btn btn-primary btn-block btn-flat">@lang('labels.user.send_password_link')</button>
-                            </div>
-                        </form>
+                                <h1>@lang('labels.user.login')</h1>
+                                <div class="form-group">
+                                    <label for="email">@lang('validation.attributes.email')</label>
+                                    {{ Form::bsEmail('email', null, ['required', 'placeholder' => __('validation.attributes.email')]) }}
+                                </div>
+                                <button type="submit" class="btn btn-primary">@lang('labels.user.send_password_link')</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

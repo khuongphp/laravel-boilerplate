@@ -32,9 +32,9 @@ Route::group(
 
 Route::group(
     [
-        'namespace' => 'User',
-        'prefix' => 'user',
-        'as' => 'user.',
+        'namespace'  => 'User',
+        'prefix'     => 'user',
+        'as'         => 'user.',
         'middleware' => ['auth'],
     ],
     function () {
@@ -57,16 +57,6 @@ Route::group(
          * Password Change
          */
         Route::patch('password/change', 'AccountController@changePassword')->name('password.change');
-
-        /*
-         * Resend confirmation mail
-         */
-        Route::get('confirmation/send', 'AccountController@sendConfirmation')->name('confirmation.send');
-
-        /*
-         * Confirm email
-         */
-        Route::get('email/confirm/{token}', 'AccountController@confirmEmail')->name('email.confirm');
 
         if (config('account.can_delete')) {
             /*

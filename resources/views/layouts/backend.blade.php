@@ -15,6 +15,14 @@
     <link rel="stylesheet" href="{{ $stylePath }}">
     @endif
 
+    <!-- CDN -->
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script defer src="//cdn.ckeditor.com/ckeditor5/12.0.0/classic/ckeditor.js"></script>
+
+    <!-- Scripts -->
+    <script defer src="{{ Html::asset('backend', 'vendor-backend.js') }}"></script>
+    <script defer src="{{ Html::asset('backend', 'backend.js') }}"></script>
+
     <!-- JS settings -->
     <script type="application/json" data-settings-selector="settings-json">
         {!! json_encode([
@@ -36,16 +44,8 @@
 
     <!-- Named routes -->
     @routes()
-
-    <!-- CDN -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script defer src="https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.2/classic/ckeditor.js"></script>
-
-    <!-- Scripts -->
-    <script defer src="{{ Html::asset('backend', 'vendor-backend.js') }}"></script>
-    <script defer src="{{ Html::asset('backend', 'backend.js') }}"></script>
 </head>
-<body class="app @yield('body_class')">
+<body class="@yield('body_class')">
     @yield('body')
 
     @stack('scripts')

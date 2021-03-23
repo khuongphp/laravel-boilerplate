@@ -21,6 +21,18 @@
     <link rel="stylesheet" href="{{ $stylePath }}">
     @endif
 
+    <!-- CDN -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.6/cookieconsent.min.css">
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.6/cookieconsent.min.js"></script>
+
+    <script defer src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script defer src="//stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
+
+    <!-- Scripts -->
+    <script defer src="{{ Html::asset('frontend', 'vendor-frontend.js') }}"></script>
+    <script defer src="{{ Html::asset('frontend', 'frontend.js') }}"></script>
+
     <!-- JS settings -->
     <script type="application/json" data-settings-selector="settings-json">
         {!! json_encode([
@@ -30,22 +42,12 @@
             ],
         ]) !!}
     </script>
-
-    <!-- CDN -->
-    <script defer src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-    <!-- Scripts -->
-    <script defer src="{{ Html::asset('frontend', 'vendor-frontend.js') }}"></script>
-    <script defer src="{{ Html::asset('frontend', 'frontend.js') }}"></script>
 </head>
 <body class="@yield('body_class')">
     @include('frontend.scripts.gtmiframe')
 
     <div id="app">
         @include('partials.logged-as')
-        @include('partials.not-confirmed')
         @include('frontend.partials.header')
         @hasSection('highlight')
             <section class="highlight">
@@ -71,9 +73,9 @@
                 @yield('content')
             </div>
         </div>
-    </div>
 
-    @include('frontend.partials.footer')
+        @include('frontend.partials.footer')
+    </div>
 
     @stack('scripts')
 </body>

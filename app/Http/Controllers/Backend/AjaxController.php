@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
 use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +31,7 @@ class AjaxController extends Controller
      * AjaxController constructor.
      *
      * @param \App\Repositories\Contracts\PostRepository       $posts
-     * @param \App\Repositories\Contracts\TagRepository        $tags
+     * @param TagRepository                                    $tags
      * @param \Mcamara\LaravelLocalization\LaravelLocalization $localization
      */
     public function __construct(PostRepository $posts, TagRepository $tags, LaravelLocalization $localization)
@@ -68,22 +66,12 @@ class AjaxController extends Controller
      */
     public function routesSearch(Request $request)
     {
-        $query = $request->get('q');
-
         $items = [];
 
         $routes = __('routes');
 
         foreach ($routes as $name => $uri) {
-            /* @var Route $route */
-            if (str_contains($name, $query)
-                || str_contains($uri, $query)
-            ) {
-                $items[] = [
-                  'value' => $name,
-                  'label' => $uri,
-                ];
-            }
+            $items[$name] = $uri;
         }
 
         return [
@@ -103,24 +91,23 @@ class AjaxController extends Controller
     public function tagsSearch(Request $request)
     {
         $query = $request->get('q');
-        $tags = $this->tags->query()
-            ->whereLocale($this->localization->getCurrentLocale())
-            ->where('name', 'like', "%$query%")
-            ->pluck('name');
+
+        $locale = app()->getLocale();
 
         return [
-            'items' => $tags,
+            'items' => $this->tags->query()
+                ->where("name->{$locale}", 'like', "%$query%")
+                ->pluck('name'),
         ];
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      *
      * @return array
      */
     public function imageUpload(Request $request)
     {
-        /** @var \Illuminate\Http\UploadedFile $uploadedImage */
         $uploadedImage = $request->file('upload');
 
         // Resize image below 600px width if needed
@@ -128,16 +115,14 @@ class AjaxController extends Controller
             $constraint->upsize();
         });
 
-        $imageName = Str::random(32);
-        $imagePath = "editor/{$imageName}.{$uploadedImage->extension()}";
-
+        $imagePath = "/tmp/{$uploadedImage->getClientOriginalName()}";
         Storage::disk('public')->put($imagePath, $image->stream());
 
         return [
             'uploaded' => true,
-            'url' => "/storage/$imagePath",
-            'width' => $image->width(),
-            'height' => $image->height(),
+            'url'      => "/storage{$imagePath}",
+            'width'    => $image->width(),
+            'height'   => $image->height(),
         ];
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
+use League\Glide\Urls\UrlBuilderFactory;
 
 if (! function_exists('home_route')) {
     /**
@@ -34,15 +34,11 @@ if (! function_exists('is_admin_route')) {
 }
 
 if (! function_exists('image_template_url')) {
-    /**
-     * @param $template
-     * @param $image_path
-     *
-     * @return string
-     */
-    function image_template_url($template, $image_path)
+    function image_template_url($path, array $params)
     {
-        return url(config('imagecache.route')."/$template/$image_path");
+        $urlBuilder = UrlBuilderFactory::create('/img/', config('glide.key'));
+
+        return $urlBuilder->getUrl($path, $params);
     }
 }
 
@@ -51,11 +47,9 @@ if (! function_exists('localize_url')) {
     {
         $url = null;
 
-        if ($translatable && method_exists($translatable, 'translate')) {
-            /** @var Translatable $translatable */
-            if ($translation = $translatable->translate($locale)) {
-                $slug = $translation->slug;
-
+        if ($translatable && method_exists($translatable, 'getTranslation')) {
+            /** @var \Spatie\Translatable\HasTranslations $translatable */
+            if ($slug = $translatable->getTranslation('slug', $locale)) {
                 $url = route(Route::current()->getName(), ['post' => $slug]);
             } else {
                 $url = route('home');

@@ -5,17 +5,55 @@ namespace App\Models;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 /**
  * App\Models\User.
+ *
+ * @property int                                                                                                       $id
+ * @property string                                                                                                    $name
+ * @property string                                                                                                    $email
+ * @property \Carbon\Carbon|null                                                                                       $email_verified_at
+ * @property string|null                                                                                               $password
+ * @property bool                                                                                                      $active
+ * @property string|null                                                                                               $remember_token
+ * @property string                                                                                                    $locale
+ * @property string                                                                                                    $timezone
+ * @property string                                                                                                    $slug
+ * @property \Carbon\Carbon|null                                                                                       $last_access_at
+ * @property \Carbon\Carbon|null                                                                                       $created_at
+ * @property \Carbon\Carbon|null                                                                                       $updated_at
+ * @property mixed                                                                                                     $avatar
+ * @property mixed                                                                                                     $can_delete
+ * @property mixed                                                                                                     $can_edit
+ * @property mixed                                                                                                     $can_impersonate
+ * @property mixed                                                                                                     $formatted_roles
+ * @property mixed                                                                                                     $is_super_admin
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\SocialLogin[]                                        $providers
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Role[]                                               $roles
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User actives()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User findSimilarSlugs($attribute, $config, $slug)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastAccessAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLocale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereTimezone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class User extends Authenticatable
 {
     use Notifiable;
-    use Sluggable;
 
     /**
      * The relationship that are eager loaded.
@@ -55,7 +93,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'confirmation_token',
         'remember_token',
     ];
 
@@ -80,6 +117,15 @@ class User extends Authenticatable
         'can_impersonate',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function (self $model) {
+            $model->slug = str_slug($model->name);
+        });
+    }
+
     public function getCanEditAttribute()
     {
         return ! $this->is_super_admin || 1 === auth()->id();
@@ -88,7 +134,7 @@ class User extends Authenticatable
     public function getCanDeleteAttribute()
     {
         return ! $this->is_super_admin && $this->id !== auth()->id() && (
-            Gate::check('access all backend') || Gate::check('delete users')
+            Gate::check('delete users')
         );
     }
 
@@ -149,7 +195,7 @@ class User extends Authenticatable
 
         foreach ($this->roles as $role) {
             foreach ($role->permissions as $permission) {
-                if (! in_array($permission, $permissions, true)) {
+                if (! \in_array($permission, $permissions, true)) {
                     $permissions[] = $permission;
                 }
             }
@@ -157,7 +203,7 @@ class User extends Authenticatable
 
         // Add children permissions
         foreach (config('permissions') as $name => $permission) {
-            if (isset($permission['children']) && in_array($name, $permissions, true)) {
+            if (isset($permission['children']) && \in_array($name, $permissions, true)) {
                 $permissions = array_merge($permissions, $permission['children']);
             }
         }
@@ -208,20 +254,6 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class);
-    }
-
-    /**
-     * Return the sluggable configuration array for this model.
-     *
-     * @return array
-     */
-    public function sluggable()
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-            ],
-        ];
     }
 
     /**
